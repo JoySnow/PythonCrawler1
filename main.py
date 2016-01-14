@@ -1,17 +1,23 @@
+"""
+Python 2.7 & RHEL7.1 & fs:xfs
+"""
+
+
 # coding:utf-8
 import urllib
 
 domain = 'http://www.liaoxuefeng.com'           #廖雪峰的域名
-path = r'C:\Users\cyhhao2013\Desktop\temp\\'    #html要保存的路径
+path = r'/tmp/pythoncrawler1.result/'    #html要保存的路径
 
 # 一个html的头文件
-input = open(r'C:\Users\cyhhao2013\Desktop\0.html', 'r')
-head = input.read()
+#input = open(r'', 'r')
+#head = input.read()
 
 # 打开python教程主界面
 f = urllib.urlopen("http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000")
 home = f.read()
 f.close()
+#print "home: "+home
 
 # 替换所有空格回车（这样容易好获取url）
 geturl = home.replace("\n", "")
@@ -36,17 +42,32 @@ for li in list:
     title = title.split(" - 廖雪峰的官方网站</title>")[0]
 
     # 要转一下码，不然加到路径里就悲剧了
-    title = title.decode('utf-8').replace("/", " ")
+    #title = title.decode('utf-8')
+    """
+    under python 2.7:
+    we get utf-8 from html and Linux's file name is OK with utf-8 code.
+    So, no need to decode here.
+    """
+    #print "title" + "%s" % title
+    title = title.replace("/", "_")
+    #print "title" + "%s" % title
+
+    output = open(path + "%d" % list.index(li), 'w')
+    output.write(html)
+    output.close()
+
 
     # 截取正文
-    html = html.split(r'<!-- block main -->')[1]
-    html = html.split(r'<h4>您的支持是作者写作最大的动力！</h4>')[0]
-    html = html.replace(r'src="', 'src="' + domain)
+    html = html.split(r'<div class="x-wiki-content">')[1]
+    html = html.split(r'<div id="x-wiki-prev-next"')[0]
+    #html = html.split(r'<h3>分享给朋友</h3>')[0]
+    #html = html.replace(r'src="', 'src="' + domain)
 
     # 加上头和尾组成完整的html
-    html = head + html+"</body></html>"
+ #   html = head + html+"</body></html>"
 
     # 输出文件
+    #print title
     output = open(path + "%d" % list.index(li) + title + '.html', 'w')
     output.write(html)
     output.close()
